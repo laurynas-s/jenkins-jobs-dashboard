@@ -1,0 +1,6 @@
+tr
+    td= row.name
+    td= row.branch
+    include status
+    td= row.version
+    td #{prettyDate(row.time)}

@@ -118,3 +118,6 @@ dist
 .pnp.*
 
 .idea/
+
+# database data
+db.json

@@ -1,0 +1,12 @@
+.build-error {
+    color: darkred;
+}
+.build-ok {
+    color: darkgreen;
+}
+.build-in-progress {
+
+}
+.build-missing {
+    color: grey;
+}

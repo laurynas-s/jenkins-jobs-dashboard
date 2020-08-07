@@ -17,7 +17,9 @@
   },
   "homepage": "https://github.com/laurynas-s/jenkins-jobs-dashboard#readme",
   "dependencies": {
+    "d3-array": "^2.5.0",
     "express": "^4.17.1",
+    "lowdb": "^1.0.0",
     "pug": "^3.0.0"
   }
 }
