@@ -5,8 +5,16 @@
     color: darkgreen;
 }
 .build-in-progress {
-
 }
 .build-missing {
     color: grey;
+}
+.fa {
+   display: table-cell;
+   text-align: center;
+}
+.center {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
 }

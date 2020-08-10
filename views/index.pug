@@ -13,7 +13,12 @@
     -var y = date.getFullYear();
     -return y+'-'+timeNumber(date.getMonth())+'-'+timeNumber(d)+' '+timeNumber(date.getHours())+':'+timeNumber(date.getMinutes());
 -}
-
+-function formatDuration(seconds) {
+ -if (!seconds) {
+    - return '';
+ -}
+ - return seconds
+-}
 
 html
     head
@@ -39,6 +44,7 @@ html
                             th= 'Name'
                             th= 'Branch'
                             th= ''
+                            th= 'Duration'
                             th= 'Version'
                             th= 'Time'
                         each row in data

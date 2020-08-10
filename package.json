@@ -17,9 +17,13 @@
   },
   "homepage": "https://github.com/laurynas-s/jenkins-jobs-dashboard#readme",
   "dependencies": {
-    "d3-array": "^2.5.0",
+    "body-parser": "^1.19.0",
+    "exit-hook": "^2.2.0",
     "express": "^4.17.1",
-    "lowdb": "^1.0.0",
-    "pug": "^3.0.0"
+    "mysql": "^2.18.1",
+    "named-placeholders": "^1.1.2",
+    "pug": "^3.0.0",
+    "validator": "^13.1.1",
+    "yml-config-reader": "^0.1.4"
   }
 }

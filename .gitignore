@@ -121,3 +121,4 @@ dist
 
 # database data
 db.json
+config.dev.yml

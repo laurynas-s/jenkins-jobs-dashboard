@@ -1,6 +1,0 @@
-[
-  {"name": "api", "branch": "develop", "status": "ok", "version": "1.0.0", "time": null},
-  {"name": "batch", "branch": "develop", "status": "error", "version": "1.0.0", "time": null},
-  {"name": "event", "branch": "develop", "status": "building", "version": "1.0.0", "time": null},
-  {"name": "event", "branch": "develop", "status": null, "version": "1.0.0", "time": null}
-]
