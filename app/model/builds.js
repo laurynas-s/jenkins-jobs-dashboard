@@ -1,6 +1,10 @@
 const jobs = require('./jobs')
 const buildsDb = require('../db/buildsDb')
 const branches = require('./branches')
+const utils = require('../utils')
+
+const statusMap = { 'ok': 1, 'building': 2, 'error': 3}
+function map(statusText) { return statusText && statusMap[statusText] ?  statusMap[statusText] : 4}
 
 function validateBuildPost(build) {
 
@@ -60,7 +64,7 @@ function processBuildPost(buildPost) {
                         version: buildPost.version,
                         duration: buildPost.duration,
                         note: buildPost.note,
-                        last_ok: lastOk
+                        lastOk: lastOk
                     }
                     console.log(`New build ${jobName}.${branchName}`)
                     return buildsDb.insertBuild(newBuild)
@@ -69,7 +73,7 @@ function processBuildPost(buildPost) {
                     build.note = buildPost.note
                     build.version = buildPost.version
                     build.duration = buildPost.duration
-                    build.last_ok = lastOk
+                    build.lastOk = lastOk
 
                     return buildsDb.updateBuild(build)
                 }
@@ -84,4 +88,22 @@ function processBuildPost(buildPost) {
         })
 }
 
+function getBuilds() {
+    return buildsDb.getBuilds()
+        .then( builds => {
+            return builds.map( build => {
+                build.rawStatus = build.status
+                build.rawTime = build.time
+                build.rawDuration = build.duration
+                build.rawLastGodBuildTime = build.lastGodBuildTime
+
+                build.status = map(build.rawStatus)
+                build.time = utils.prettyDate(build.rawTime)
+                build.lastGodBuildTime = utils.prettyDate(build.lastGodBuildTime)
+                return build
+            })
+        })
+}
+
 exports.processBuildPost = processBuildPost
+exports.getBuilds = getBuilds

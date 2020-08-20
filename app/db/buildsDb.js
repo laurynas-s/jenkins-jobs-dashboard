@@ -18,7 +18,7 @@ function getBuilds() {
                             lb.version as lastGodBuildVersion,
                             lb.time as lastGodBuildTime
                             FROM latestBuildStatus LEFT JOIN 
-                            builds as lb ON latestBuildStatus.branchId2 = lb.branchId and lb.last_ok = 1
+                            builds as lb ON latestBuildStatus.branchId2 = lb.branchId and lb.lastOk = 1
                             WHERE rn = 1 
                             ORDER BY pos`)
 }
@@ -61,19 +61,19 @@ function getLastNotFinishedBuild(branchId) {
 
 
 function updateBuild(build) {
-    return pool.query(`UPDATE builds SET status=?, version=?, duration=?, time=now(), note=?, last_ok=? WHERE id=?`,
+    return pool.query(`UPDATE builds SET status=?, version=?, duration=?, time=now(), note=?, lastOk=? WHERE id=?`,
         [
             build.status,
             build.version,
             build.duration,
             build.note,
-            build.last_ok,
+            build.lastOk,
             build.id
         ])
 }
 
 function insertBuild(build) {
-    return pool.query(`INSERT INTO builds SET jobId=?, branchId=?, status=?, version=?, duration=?, time=now(), note=?, last_ok=?`,
+    return pool.query(`INSERT INTO builds SET buildJenkinsId=?, jobId=?, branchId=?, status=?, version=?, duration=?, time=now(), note=?, lastOk=?`,
             [
                 build.jobId,
                 build.branchId,
@@ -81,7 +81,8 @@ function insertBuild(build) {
                 build.version,
                 build.duration,
                 build.note,
-                build.last_ok
+                build.lastOk,
+                build.jenkinsId
             ]
         )
         .then((results) => {
@@ -90,7 +91,7 @@ function insertBuild(build) {
 }
 
 function markBuildsNotLastOk(branchId) {
-    return pool.query(`UPDATE builds SET last_ok = 0 WHERE branchId = ? and last_ok = 1`, [branchId])
+    return pool.query(`UPDATE builds SET lastOk = 0 WHERE branchId = ? and lastOk = 1`, [branchId])
 }
 
 exports.getBuilds = getBuilds

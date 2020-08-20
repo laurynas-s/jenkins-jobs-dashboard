@@ -1,7 +1,4 @@
-- const statusMap = { 'ok': 1, 'building': 2, 'error': 3}
-- function map(statusText) { return statusText && statusMap[statusText] ?  statusMap[statusText] : 4}
-
-case map(row.status)
+case row.status
     when 1: td(class='fa fa-check-square-o build-ok')
     when 2: td(class='build-in-progress')
                 img(src='images/loader1.gif', width="20", heigh="20" class='center')

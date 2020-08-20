@@ -29,7 +29,7 @@ exitHook(() => {
 
 app.get('/', (req, res) => {
 
-    buildsDb.getBuilds()
+    builds.getBuilds()
         .then(result => {
             res.render('index', {data: result})
         })
