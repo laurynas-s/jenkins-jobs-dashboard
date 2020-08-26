@@ -20,6 +20,10 @@ function validateBuildPost(build) {
         throw {message: "Missing status"}
     }
 
+    if (!build.buildJenkinsId) {
+        throw {message: "Missing buildJenkinsId"}
+    }
+
     if (!build.note) {
         build.note = null
     }
@@ -64,7 +68,8 @@ function processBuildPost(buildPost) {
                         version: buildPost.version,
                         duration: buildPost.duration,
                         note: buildPost.note,
-                        lastOk: lastOk
+                        lastOk: lastOk,
+                        buildJenkinsId: buildPost.buildJenkinsId
                     }
                     console.log(`New build ${jobName}.${branchName}`)
                     return buildsDb.insertBuild(newBuild)
