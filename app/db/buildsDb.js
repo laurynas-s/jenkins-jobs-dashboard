@@ -75,14 +75,14 @@ function updateBuild(build) {
 function insertBuild(build) {
     return pool.query(`INSERT INTO builds SET buildJenkinsId=?, jobId=?, branchId=?, status=?, version=?, duration=?, time=now(), note=?, lastOk=?`,
             [
+                build.jenkinsId,
                 build.jobId,
                 build.branchId,
                 build.status,
                 build.version,
                 build.duration,
                 build.note,
-                build.lastOk,
-                build.jenkinsId
+                build.lastOk
             ]
         )
         .then((results) => {
