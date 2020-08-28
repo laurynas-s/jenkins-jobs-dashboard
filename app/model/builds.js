@@ -6,6 +6,33 @@ const utils = require('../utils')
 const statusMap = { 'ok': 1, 'building': 2, 'error': 3}
 function map(statusText) { return statusText && statusMap[statusText] ?  statusMap[statusText] : 4}
 
+function msToTime(duration) {
+    if (!duration) {
+        return '';
+    }
+    let milliseconds = parseInt((duration % 1000) / 100),
+        seconds = Math.floor((duration / 1000) % 60),
+        minutes = Math.floor((duration / (1000 * 60)) % 60),
+        hours = Math.floor((duration / (1000 * 60 * 60)) % 24);
+
+    let hasHours = hours > 0;
+    let hasMinutes = minutes > 0;
+    let hasSeconds = seconds > 0;
+
+    let timeString = '';
+    if (hasHours) {
+        timeString = hours + "h " + minutes + "m " + seconds + "s " + milliseconds + ' ms';
+    } else if(hasMinutes) {
+        timeString = minutes + "m " + seconds + "s " + milliseconds + ' ms';
+    } else if(hasSeconds) {
+        timeString = seconds + "s " + milliseconds + ' ms';
+    } else {
+        timeString = milliseconds + ' ms';
+    }
+
+    return timeString;
+}
+
 function validateBuildPost(build) {
 
     if (!build.name) {
@@ -100,6 +127,7 @@ function getBuilds() {
                 build.rawStatus = build.status
                 build.rawTime = build.time
                 build.rawDuration = build.duration
+                build.duration = msToTime(build.rawDuration)
                 build.rawLastGodBuildTime = build.lastGodBuildTime
 
                 build.status = map(build.rawStatus)

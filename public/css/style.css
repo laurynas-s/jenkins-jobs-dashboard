@@ -18,3 +18,15 @@
     margin-left: auto;
     margin-right: auto;
 }
+
+.table > thead > tr > th,
+.table > tbody > tr > th,
+.table > tfoot > tr > th,
+.table > thead > tr > td,
+.table > tbody > tr > td,
+.table > tfoot > tr > td {
+    padding: 2px;
+}
+#wrapper {
+    margin-top: 0px!important;
+}
