@@ -1,7 +1,8 @@
 tr
-    td= row.name
+    include name
     td= row.branch
     include status
-    td= row.duration
+    include jenkins
     include version
-    td= row.time
+    td= row.duration
+    include time

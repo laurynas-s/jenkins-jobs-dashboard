@@ -42,7 +42,10 @@ app.post('/job', (req, res) => {
     console.log(req.body)
     builds.processBuildPost(req.body)
         .then(() => res.sendStatus(200))
-        .catch(err => res.status(500).json(err))
+        .catch(err => {
+            console.error(err)
+            res.status(500).json(err.message)
+        })
 
 });
 

@@ -20,6 +20,10 @@ function insertJob(job) {
         .then((results) => {
             return {insertId: results.insertId}
         })
+        .catch( err => {
+            console.error(err);
+            return null
+        })
 }
 
 function updateJob(job) {

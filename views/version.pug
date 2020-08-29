@@ -1,13 +1,10 @@
-if row.rawStatus=='ok'
-    td
-        span(class='fa fa-arrow-right')= ' '
-            a
-                img(src='images/Logo-Blue_140px_rgb.png', width='24px', heigh='24px')
-                img(src='images/jenkins.png', width='24px', heigh='24px')
-            a= row.version
-else if row.lastGodBuildVersion
-    td
+td
+    if row.rawStatus=='ok'
+        if row.version
+            span= row.version
+    else if row.lastGodBuildVersion
         span(class="fa fa-calendar", title=row.lastGodBuildTime)= ' '
-            a= row.lastGodBuildVersion
-else
-    td(class="fa fa-question-circle build-missing")
+            span= row.lastGodBuildVersion
+            span= " " + row.lastGodBuildTime
+    else
+        span(class="fa fa-question-circle build-missing")

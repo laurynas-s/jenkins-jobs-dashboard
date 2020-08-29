@@ -20,6 +20,10 @@ function insertBranch(branch) {
         .then((results) => {
             return {insertId: results.insertId}
         })
+        .catch( err => {
+            console.error(err);
+            return null
+        })
 }
 
 exports.getBranches = getBranches

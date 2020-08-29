@@ -6,7 +6,7 @@ function timeNumber(number) {
 
 function prettyDate(dateString) {
     if (!dateString) {
-        return '-'
+        return null
     }
     //if it's already a date object and not a string you don't need this line:
     var date = new Date(dateString);

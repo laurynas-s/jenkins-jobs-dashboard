@@ -7,6 +7,11 @@ mysql:
   database:
   host:
 
+environment:
+  jenkins:
+  octopus:
+  repository:
+
 jobs:
   - name: dependency X
     branch: develop

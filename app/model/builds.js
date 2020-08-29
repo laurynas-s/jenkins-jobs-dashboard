@@ -3,8 +3,11 @@ const buildsDb = require('../db/buildsDb')
 const branches = require('./branches')
 const utils = require('../utils')
 
-const statusMap = { 'ok': 1, 'building': 2, 'error': 3}
-function map(statusText) { return statusText && statusMap[statusText] ?  statusMap[statusText] : 4}
+const statusMap = {'ok': 1, 'building': 2, 'error': 3}
+
+function map(statusText) {
+    return statusText && statusMap[statusText] ? statusMap[statusText] : 4
+}
 
 function msToTime(duration) {
     if (!duration) {
@@ -22,9 +25,9 @@ function msToTime(duration) {
     let timeString = '';
     if (hasHours) {
         timeString = hours + "h " + minutes + "m " + seconds + "s " + milliseconds + ' ms';
-    } else if(hasMinutes) {
+    } else if (hasMinutes) {
         timeString = minutes + "m " + seconds + "s " + milliseconds + ' ms';
-    } else if(hasSeconds) {
+    } else if (hasSeconds) {
         timeString = seconds + "s " + milliseconds + ' ms';
     } else {
         timeString = milliseconds + ' ms';
@@ -35,45 +38,94 @@ function msToTime(duration) {
 
 function validateBuildPost(build) {
 
-    if (!build.name) {
-        throw {message: "Missing job name"}
+    return new Promise((suc, fail) => {
+        const errors = [];
+        if (!build.name) {
+            errors.push("Missing job name")
+        }
+
+        if (!build.branch) {
+            errors.push("Missing branch name")
+        }
+
+        if (!build.status) {
+            errors.push("Missing status")
+        }
+
+        if (!build.buildJenkinsId) {
+            errors.push("Missing buildJenkinsId")
+        }
+
+        if (errors.length > 0) {
+            fail({message: errors.join("; ")});
+        }
+
+        if (!build.note) {
+            build.note = null
+        }
+
+        if (!build.version) {
+            build.version = null
+        }
+        if (!build.duration) {
+            build.duration = null
+        }
+
+        suc(build);
+    })
+
+}
+
+function processJenkinsId(jenkinsId) {
+
+    const data = {
+        jobUrl: null,
+        buildUrl: null,
+        buildNr: null,
+        jobName: null
     }
 
-    if (!build.branch) {
-        throw {message: "Missing branch name"}
-    }
+    try {
 
-    if (!build.status) {
-        throw {message: "Missing status"}
-    }
+        if (jenkinsId.indexOf("http") == -1) {
+            return null
+        }
+        let url = jenkinsId
+        url = url.substr(0, url.length - 1)
+        let string = url.replace("//", "/")
+        let data = string.split("/")
 
-    if (!build.buildJenkinsId) {
-        throw {message: "Missing buildJenkinsId"}
-    }
+        const buildNr = data.pop()
+        const jobName = data.pop()
+        const position = url.lastIndexOf("/")
+        const jobUrl = url.substr(0, position)
 
-    if (!build.note) {
-        build.note = null
-    }
+        data.buildUrl = jenkinsId
+        data.buildNr = buildNr
+        data.jobName = jobName
+        data.jobUrl = jobUrl
 
-    if (!build.version) {
-        build.version = null
-    }
-    if (!build.duration) {
-        build.duration = null
-    }
+        return data
 
-    return build
+    } catch (e) {
+        console.error(e)
+        return null
+    }
 }
 
 function processBuildPost(buildPost) {
-
-    buildPost = validateBuildPost(buildPost)
-    const jobName = buildPost.name
-    const branchName = buildPost.branch
+    let jobName = null
+    let branchName = null
     let jobId = null
     let branchId = null
 
-    return jobs.getOrCreateJob(jobName)
+    return validateBuildPost(buildPost)
+        .then(buildPost => {
+            jobName = buildPost.name
+            branchName = buildPost.branch
+            return jobName
+        })
+        .then(jobs.getOrCreateJob)
         .then(job => {
             jobId = job.id
             return branches.getOrCreateBranch(branchName, jobId)
@@ -122,13 +174,23 @@ function processBuildPost(buildPost) {
 
 function getBuilds() {
     return buildsDb.getBuilds()
-        .then( builds => {
-            return builds.map( build => {
+        .then(builds => {
+            return builds.map(build => {
                 build.rawStatus = build.status
                 build.rawTime = build.time
                 build.rawDuration = build.duration
                 build.duration = msToTime(build.rawDuration)
                 build.rawLastGodBuildTime = build.lastGodBuildTime
+
+                if (build.buildJenkinsId) {
+                    const jenkinsData = processJenkinsId(build.buildJenkinsId)
+                    if (jenkinsData) {
+                        build.hasJenkinsData = true
+                        build.jenkinsData = jenkinsData
+                    } else {
+                        build.hasJenkinsData = false
+                    }
+                }
 
                 build.status = map(build.rawStatus)
                 build.time = utils.prettyDate(build.rawTime)

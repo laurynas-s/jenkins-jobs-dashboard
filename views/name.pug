@@ -1,0 +1,8 @@
+td
+    if row.hasJenkinsData
+        a(href=row.jenkinsData.jobUrl, target="_blank")
+            img(src='images/jenkins.png', width='24px', heigh='24px')
+            span=row.jenkinsData.jobName + " "
+            span(class='fa fa-external-link')
+    else
+        span=row.name

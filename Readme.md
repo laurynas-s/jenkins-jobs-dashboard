@@ -10,16 +10,20 @@ To install as Windows service, use NSSM (https://nssm.cc/)
 
 MySql: docker-compose -f stack.yml up
 
-##ToDo 
+## ToDo 
+ - Branch links
+    - Releases
+    - Custom builds
  - Links:
     - To repository
-    - To Jenkins
-        - Job
-        - Build
+    - ~~To Jenkins~~
+        - ~~Job~~
+        - ~~Build~~
     - To Octopus
         - Project
         - Release
- - Jenkins / Octopus versions
- - Handle save errors
- - Display duration
+ - ~~Jenkins versions~~ 
+ - Octopus versions
+ - ~~Handle save errors~~
+ - ~~Display duration~~
         

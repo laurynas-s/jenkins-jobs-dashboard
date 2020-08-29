@@ -88,6 +88,10 @@ function insertBuild(build) {
         .then((results) => {
             return {insertId: results.insertId}
         })
+        .catch( err => {
+            console.error(err);
+            return null
+        })
 }
 
 function markBuildsNotLastOk(branchId) {
