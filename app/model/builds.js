@@ -200,5 +200,10 @@ function getBuilds() {
         })
 }
 
+function getBranchBuilds(branchPattern, limit) {
+    return buildsDb.getBranchBuilds(branchPattern, limit)
+}
+
+
 exports.processBuildPost = processBuildPost
 exports.getBuilds = getBuilds

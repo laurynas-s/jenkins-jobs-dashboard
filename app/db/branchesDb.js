@@ -26,6 +26,28 @@ function insertBranch(branch) {
         })
 }
 
+function getDistinctBranchesByPattern(pattern, last) {
+    return pool.query(`
+        SELECT
+        DISTINCT branch
+        FROM branches
+        WHERE branch like ?
+        ORDER BY branch+1
+    `, [pattern])
+        .then(data => {
+            const menu = [];
+            while(data.length > 0 && menu.length < last) {
+                menu.push(data.pop().branch)
+            }
+            return menu
+        })
+        .catch( err => {
+            console.error(err);
+            return []
+        })
+}
+
 exports.getBranches = getBranches
 exports.getBranchByNameAndJob = getBranchByNameAndJob
 exports.insertBranch = insertBranch
+exports.getDistinctBranchesByPattern = getDistinctBranchesByPattern

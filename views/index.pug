@@ -10,7 +10,10 @@ html
         meta(http-equiv="refresh", content="30")
     body(class='pace-done')
         div(id='wrapper')
-            div(class='navbar')
+            div(class='navbar-default navbar-static-side')
+                div(class='sidebar-collapse')
+                    a(href='/flush')
+                        span(class='fa fa-refresh fa-2x')
             div(id='page-wrapper')
                 div(class='row')
                     h1= 'Builds Dashboard'

@@ -11,6 +11,7 @@ To install as Windows service, use NSSM (https://nssm.cc/)
 MySql: docker-compose -f stack.yml up
 
 ## ToDo 
+ - Deploy script for Jenkins   
  - Branch links
     - Releases
     - Custom builds

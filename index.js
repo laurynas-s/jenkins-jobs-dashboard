@@ -1,13 +1,14 @@
+const configReader = require('yml-config-reader')
+const config = configReader.getByEnv(process.env.STAGE)
+
 const express = require('express')
 const bodyParser = require('body-parser');
 const exitHook = require('exit-hook');
-const configReader = require('yml-config-reader')
 const mysql = require('./app/db/pool')
-const buildsDb = require('./app/db/buildsDb')
 const builds = require('./app/model/builds')
 const jobs = require('./app/model/jobs')
-
-const config = configReader.getByEnv(process.env.STAGE)
+const cache = require('./app/component/cache')
+const menu = require('./app/component/branchMenu')
 
 const app = express()
 const port = config.server.port
@@ -38,6 +39,21 @@ app.get('/', (req, res) => {
         })
 })
 
+app.get('/flush', (req, res) => {
+    cache.flush()
+    res.redirect('/')
+})
+
+app.get('/branch', (req, res) => {
+    builds.getBuilds(req.params.branch)
+        .then(result => {
+            res.render('index', {data: result})
+        })
+        .catch(err => {
+            res.render('index', {data: [], message: JSON.stringify(err)})
+        })
+})
+
 app.post('/job', (req, res) => {
     console.log(req.body)
     builds.processBuildPost(req.body)
@@ -50,7 +66,8 @@ app.post('/job', (req, res) => {
 });
 
 app.get('/test', (req, res) => {
-    buildsDb.getBuilds().then(result => {
+    menu.getMenu()
+        .then(result => {
         res.json(result)
     }).catch(err => res.json(err))
 })
