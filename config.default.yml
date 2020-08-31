@@ -21,21 +21,3 @@ branches:
 
 caching:
   branchMenu: 180
-
-jobs:
-  - name: dependency X
-    branch: develop
-  - name: dependency Y
-    branch: master
-  - name: Module A
-    branch: develop
-  - name: Module B
-    branch: develop
-  - name: Module C
-    branch: develop
-  - name: Module D
-    branch: develop
-  - name: Module E
-    branch: develop
-  - name: Module F
-    branch: develop
