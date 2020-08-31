@@ -2,6 +2,8 @@ const jobs = require('./jobs')
 const buildsDb = require('../db/buildsDb')
 const branches = require('./branches')
 const utils = require('../utils')
+const configReader = require('yml-config-reader')
+const config = configReader.getByEnv(process.env.STAGE)
 
 const statusMap = {'ok': 1, 'building': 2, 'error': 3}
 
@@ -87,23 +89,22 @@ function processJenkinsId(jenkinsId) {
 
     try {
 
-        if (jenkinsId.indexOf("http") == -1) {
+        if (jenkinsId.indexOf("/") == -1) {
             return null
         }
         let url = jenkinsId
-        url = url.substr(0, url.length - 1)
-        let string = url.replace("//", "/")
-        let data = string.split("/")
+        let parts = url.split("/")
 
-        const buildNr = data.pop()
-        const jobName = data.pop()
+        const buildNr = parts.pop()
+        const jobName = parts.pop()
         const position = url.lastIndexOf("/")
         const jobUrl = url.substr(0, position)
 
-        data.buildUrl = jenkinsId
+        const data = {}
+        data.buildUrl = config.environment.jenkins + '/job/' + jobName + '/' + buildNr
         data.buildNr = buildNr
         data.jobName = jobName
-        data.jobUrl = jobUrl
+        data.jobUrl = config.environment.jenkins + jobUrl
 
         return data
 
