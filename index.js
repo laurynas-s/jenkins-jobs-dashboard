@@ -38,7 +38,7 @@ app.get('/', (req, res) => {
             res.render('index', {data: result, menu: menu})
         })
         .catch(err => {
-            res.render('index', {data: [], message: JSON.stringify(err)})
+            res.render('index', {data: [], menu:[], message: JSON.stringify(err)})
         })
 })
 
@@ -48,12 +48,15 @@ app.get('/flush', (req, res) => {
 })
 
 app.get('/branch', (req, res) => {
-    builds.getBuilds(req.params.branch)
+    let menu = null
+    branchMenu.getMenu()
+        .then(result => menu=result)
+        .then(() => builds.getBranchBuilds(req.query.branch))
         .then(result => {
-            res.render('index', {data: result})
+            res.render('index', {data: result, menu: menu})
         })
         .catch(err => {
-            res.render('index', {data: [], message: JSON.stringify(err)})
+            res.render('index', {data: [], menu:[], message: JSON.stringify(err)})
         })
 })
 
@@ -75,7 +78,7 @@ app.get('/test', (req, res) => {
     }).catch(err => res.json(err))
 })
 
-jobs.initiateDefaultJobs(config.jobs)
+jobs.initiateDefaultJobs(config.jobs ? config.jobs : [])
     .then(() => {
         app.listen(port, () => {
             console.log(`Example app listening at http://localhost:${port}`)

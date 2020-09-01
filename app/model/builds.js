@@ -2,10 +2,16 @@ const jobs = require('./jobs')
 const buildsDb = require('../db/buildsDb')
 const branches = require('./branches')
 const utils = require('../utils')
+const cache = require('../component/cache')
 const configReader = require('yml-config-reader')
 const config = configReader.getByEnv(process.env.STAGE)
 
 const statusMap = {'ok': 1, 'building': 2, 'error': 3}
+
+const cacheKeys = {
+    BUILDS: "builds",
+    BRANCHES: "branches"
+}
 
 function map(statusText) {
     return statusText && statusMap[statusText] ? statusMap[statusText] : 4
@@ -77,6 +83,7 @@ function validateBuildPost(build) {
     })
 
 }
+
 function processMultibranchLink(link) {
     let url = link
     let parts = url.split("/")
@@ -195,38 +202,63 @@ function processBuildPost(buildPost) {
         })
 }
 
-function getBuilds() {
-    return buildsDb.getBuilds()
-        .then(builds => {
-            return builds.map(build => {
-                build.rawStatus = build.status
-                build.rawTime = build.time
-                build.rawDuration = build.duration
-                build.duration = msToTime(build.rawDuration)
-                build.rawLastGodBuildTime = build.lastGodBuildTime
+function formatBuilds(builds) {
+    return builds.map(build => {
+        build.rawStatus = build.status
+        build.rawTime = build.time
+        build.rawDuration = build.duration
+        build.duration = msToTime(build.rawDuration)
+        build.rawLastGodBuildTime = build.lastGodBuildTime
 
-                if (build.buildJenkinsId) {
-                    const jenkinsData = processJenkinsId(build.buildJenkinsId)
-                    if (jenkinsData) {
-                        build.hasJenkinsData = true
-                        build.jenkinsData = jenkinsData
-                    } else {
-                        build.hasJenkinsData = false
-                    }
-                }
+        if (build.buildJenkinsId) {
+            const jenkinsData = processJenkinsId(build.buildJenkinsId)
+            if (jenkinsData) {
+                build.hasJenkinsData = true
+                build.jenkinsData = jenkinsData
+            } else {
+                build.hasJenkinsData = false
+            }
+        }
 
-                build.status = map(build.rawStatus)
-                build.time = utils.prettyDate(build.rawTime)
-                build.lastGodBuildTime = utils.prettyDate(build.lastGodBuildTime)
-                return build
-            })
-        })
+        build.status = map(build.rawStatus)
+        build.time = utils.prettyDate(build.rawTime)
+        build.lastGodBuildTime = utils.prettyDate(build.lastGodBuildTime)
+        return build
+    })
 }
 
-function getBranchBuilds(branchPattern, limit) {
-    return buildsDb.getBranchBuilds(branchPattern, limit)
+function getBuilds() {
+
+    const cached = cache.get(cacheKeys.BUILDS);
+    if (cached) {
+        return Promise.resolve(formatBuilds(cached))
+    } else {
+        return buildsDb.getBuilds()
+            .then(builds => {
+                cache.set(cacheKeys.BUILDS, builds, config.caching[cacheKeys.BUILDS])
+                return builds
+            })
+            .then(formatBuilds)
+    }
+}
+
+
+function getBranchBuilds(branch) {
+    const key = cacheKeys.BRANCHES + '.' + branch;
+    const cached = cache.get(key);
+    if (cached) {
+        return Promise.resolve(formatBuilds(cached))
+    } else {
+        return buildsDb.getBranchBuilds(branch)
+            .then(result => {
+                cache.set(key, result, config.caching[cacheKeys.BUILDS])
+                return result
+            })
+            .then(formatBuilds)
+    }
 }
 
 
 exports.processBuildPost = processBuildPost
 exports.getBuilds = getBuilds
+exports.getBranchBuilds = getBranchBuilds

@@ -21,3 +21,4 @@ branches:
 
 caching:
   branchMenu: 180
+  builds: 15

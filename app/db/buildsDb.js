@@ -23,28 +23,28 @@ function getBuilds() {
                             ORDER BY pos`)
 }
 
-function getBranchBuilds(pattern, limit) {
+function getBranchBuilds(branch) {
     return pool.query(`WITH latestBuildStatus AS (
-                              SELECT 
-                                j.name,
-                                j.pos,
-                                br.branch,
-                                br.id as branchId2,
-                                b.*,
-                                ROW_NUMBER() OVER (PARTITION BY br.id ORDER BY b.time DESC) AS rn
-                                FROM jobs j JOIN branches br ON j.id = br.jobId 
-                                LEFT JOIN builds b ON br.id = b.branchId 
-                                WHERE br.main = 1
-                            )
-                            SELECT latestBuildStatus.*,
-                            lb.id as lastGodBuildId,
-                            lb.version as lastGodBuildVersion,
-                            lb.time as lastGodBuildTime
-                            FROM latestBuildStatus LEFT JOIN 
-                            builds as lb ON latestBuildStatus.branchId2 = lb.branchId and br.branch like '?%'
-                            WHERE rn = 1 
-                            ORDER BY pos`,
-            [pattern])
+            SELECT
+                j.name,
+                j.pos,
+                br.branch,
+                br.id as branchId2,
+                b.*,
+                ROW_NUMBER() OVER (PARTITION BY br.id ORDER BY b.time DESC) AS rn
+            FROM jobs j JOIN branches br ON j.id = br.jobId
+                        LEFT JOIN builds b ON br.id = b.branchId
+            WHERE br.branch like ?
+        )
+        SELECT latestBuildStatus.*,
+               lb.id as lastGodBuildId,
+               lb.version as lastGodBuildVersion,
+               lb.time as lastGodBuildTime
+        FROM latestBuildStatus LEFT JOIN
+             builds as lb ON latestBuildStatus.branchId2 = lb.branchId and lb.lastOk = 1
+        WHERE rn = 1
+        ORDER BY pos`,
+            [branch])
 }
 
 function getLastSuccessfulBuild(branchId) {
