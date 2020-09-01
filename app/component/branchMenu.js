@@ -14,7 +14,7 @@ function setBranchesToCache(branches) {
 function getCachedBranches() {
     let branches = cache.get(BRANCHES_BY_PATTERN_KEY)
     if (branches === null || branches === undefined) {
-        return branchDb.getDistinctBranchesByPattern('release%', 3)
+        return branchDb.getDistinctBranchesByPattern('release%', config.branches.last)
             .then(setBranchesToCache)
     } else {
         console.log('got menu cache')

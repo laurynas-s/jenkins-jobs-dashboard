@@ -77,36 +77,58 @@ function validateBuildPost(build) {
     })
 
 }
+function processMultibranchLink(link) {
+    let url = link
+    let parts = url.split("/")
+
+    parts.pop()
+    const buildNr = parts.pop()
+    const branchName = parts.pop()
+    parts.pop()
+    const jobName = parts.pop()
+    const jobUrl = "/job/" + jobName
+    const buildUrl = "/job/" + jobName + "/job/" + branchName + "/" + buildNr
+
+    const data = {}
+    data.buildUrl = config.environment.jenkins + buildUrl
+    data.buildNr = buildNr
+    data.jobName = jobName
+    data.jobUrl = config.environment.jenkins + jobUrl
+
+    return data
+}
+
+function processSimpleLink(link) {
+    let url = link
+    let parts = url.split("/")
+
+    const buildNr = parts.pop()
+    const jobName = parts.pop()
+    const position = url.lastIndexOf("/")
+    const jobUrl = url.substr(0, position)
+
+    const data = {}
+    data.buildUrl = config.environment.jenkins + '/job/' + jobName + '/' + buildNr
+    data.buildNr = buildNr
+    data.jobName = jobName
+    data.jobUrl = config.environment.jenkins + jobUrl
+
+    return data
+}
 
 function processJenkinsId(jenkinsId) {
 
-    const data = {
-        jobUrl: null,
-        buildUrl: null,
-        buildNr: null,
-        jobName: null
-    }
-
     try {
+
+        if (jenkinsId.indexOf("http") != -1) {
+            return processMultibranchLink(jenkinsId)
+        }
 
         if (jenkinsId.indexOf("/") == -1) {
             return null
         }
-        let url = jenkinsId
-        let parts = url.split("/")
 
-        const buildNr = parts.pop()
-        const jobName = parts.pop()
-        const position = url.lastIndexOf("/")
-        const jobUrl = url.substr(0, position)
-
-        const data = {}
-        data.buildUrl = config.environment.jenkins + '/job/' + jobName + '/' + buildNr
-        data.buildNr = buildNr
-        data.jobName = jobName
-        data.jobUrl = config.environment.jenkins + jobUrl
-
-        return data
+        return processSimpleLink(jenkinsId)
 
     } catch (e) {
         console.error(e)

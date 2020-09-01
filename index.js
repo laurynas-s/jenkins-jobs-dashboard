@@ -8,7 +8,7 @@ const mysql = require('./app/db/pool')
 const builds = require('./app/model/builds')
 const jobs = require('./app/model/jobs')
 const cache = require('./app/component/cache')
-const menu = require('./app/component/branchMenu')
+const branchMenu = require('./app/component/branchMenu')
 
 const app = express()
 const port = config.server.port
@@ -30,9 +30,12 @@ exitHook(() => {
 
 app.get('/', (req, res) => {
 
-    builds.getBuilds()
+    let menu = null;
+    branchMenu.getMenu()
+        .then(result => menu=result)
+        .then(builds.getBuilds)
         .then(result => {
-            res.render('index', {data: result})
+            res.render('index', {data: result, menu: menu})
         })
         .catch(err => {
             res.render('index', {data: [], message: JSON.stringify(err)})
@@ -66,7 +69,7 @@ app.post('/job', (req, res) => {
 });
 
 app.get('/test', (req, res) => {
-    menu.getMenu()
+    branchMenu.getMenu()
         .then(result => {
         res.json(result)
     }).catch(err => res.json(err))

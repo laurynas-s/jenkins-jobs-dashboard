@@ -13,11 +13,11 @@ environment:
   repository:
 
 branches:
-  - pattern: release
-    last: 2
-    jobs:
-      - dependency X
-      - dependency Y
+  pattern: release
+  last: 2
+  jobs:
+    - dependency X
+    - dependency Y
 
 caching:
   branchMenu: 180
