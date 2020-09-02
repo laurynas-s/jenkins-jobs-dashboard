@@ -1,5 +1,5 @@
-.build-error {
-    color: darkred;
+.build-error, .build-timeout  {
+    color: red;
 }
 .build-ok {
     color: darkgreen;
@@ -29,4 +29,7 @@
 }
 #wrapper {
     margin-top: 0px!important;
+}
+.status-error, .status-timeout {
+    color: darkred
 }

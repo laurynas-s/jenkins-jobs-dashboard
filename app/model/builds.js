@@ -6,7 +6,7 @@ const cache = require('../component/cache')
 const configReader = require('yml-config-reader')
 const config = configReader.getByEnv(process.env.STAGE)
 
-const statusMap = {'ok': 1, 'building': 2, 'error': 3}
+const statusMap = {'ok': 1, 'building': 2, 'error': 3, 'missing': 4, 'timeout': 5}
 
 const cacheKeys = {
     BUILDS: "builds",
@@ -217,6 +217,13 @@ function formatBuilds(builds) {
                 build.jenkinsData = jenkinsData
             } else {
                 build.hasJenkinsData = false
+            }
+        }
+
+        if (build.rawStatus == 'building' && build.rawTime) {
+            const difference = (new Date().getTime() - build.rawTime.getTime())/1000
+            if (difference > 60*60*2) {
+                build.rawStatus = 'timeout'
             }
         }
 

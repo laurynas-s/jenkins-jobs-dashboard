@@ -28,7 +28,7 @@ exitHook(() => {
         })
 });
 
-app.get('/', (req, res) => {
+app.get('/main', (req, res) => {
 
     let menu = null;
     branchMenu.getMenu()
@@ -38,15 +38,17 @@ app.get('/', (req, res) => {
             res.render('index', {data: result, menu: menu})
         })
         .catch(err => {
-            res.render('index', {data: [], menu:[], message: JSON.stringify(err)})
+            res.render('index', {data: [], menu:[], message: err.message ? err.message : JSON.stringify(err)})
         })
 })
 
+app.get('/', (req, res) => {
+    res.redirect('main')
+})
 app.get('/flush', (req, res) => {
     cache.flush()
-    res.redirect('/')
+    res.redirect('main')
 })
-
 app.get('/branch', (req, res) => {
     let menu = null
     branchMenu.getMenu()
