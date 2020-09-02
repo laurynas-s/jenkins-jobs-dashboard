@@ -11,6 +11,17 @@ function setBranchesToCache(branches) {
     return branches
 }
 
+function mapBranchesToMenuStructure(branch) {
+    if (!branch) {
+        return ''
+    }
+
+    return {
+        name: branch,
+        link: encodeURIComponent(branch)
+    }
+}
+
 function getCachedBranches() {
     let branches = cache.get(BRANCHES_BY_PATTERN_KEY)
     if (branches === null || branches === undefined) {
@@ -23,14 +34,8 @@ function getCachedBranches() {
 }
 
 function getMenu() {
-
-
     return getCachedBranches()
-
-    // select branches by pattern
-    // last N
-    // cache
-
+        .then(branches => branches.map(mapBranchesToMenuStructure))
 }
 
 exports.getMenu = getMenu
