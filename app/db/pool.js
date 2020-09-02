@@ -1,6 +1,5 @@
 const mysql      = require('mysql');
-const configReader = require('yml-config-reader')
-const config = configReader.getByEnv(process.env.STAGE)
+const config = require('../component/config').get()
 
 const pool  = mysql.createPool({
     connectionLimit : 2,

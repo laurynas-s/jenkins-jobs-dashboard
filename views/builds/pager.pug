@@ -1,0 +1,8 @@
+div(class='dataTables_paginate paging_simple_numbers' style='text-align: center')
+    ul(class='pagination')
+    if pager.start
+        a(href=pageUrl + pager.start, class='btn btn-online btn-default')='Start'
+    if pager.prev
+        a(href=pageUrl + pager.prev, class='btn btn-online btn-default')='Prev'
+    span(class='btn btn-online btn-default disabled')=pager.page
+    a(href=pageUrl + pager.next, class='btn btn-online btn-default')='Next'

@@ -15,9 +15,12 @@ environment:
 branches:
   pattern: release
   last: 2
-  jobs:
-    - dependency X
-    - dependency Y
+
+table:
+  timeoutHours: 2
+  branches:
+    paging: 20
+
 
 caching:
   branchMenu: 180

@@ -3,14 +3,15 @@ const buildsDb = require('../db/buildsDb')
 const branches = require('./branches')
 const utils = require('../utils')
 const cache = require('../component/cache')
-const configReader = require('yml-config-reader')
-const config = configReader.getByEnv(process.env.STAGE)
+const config = require('../component/config').get()
 
 const statusMap = {'ok': 1, 'building': 2, 'error': 3, 'missing': 4, 'timeout': 5}
 
 const cacheKeys = {
     BUILDS: "builds",
-    BRANCHES: "branches"
+    BRANCHES: "branches",
+    JOBS: "jobs",
+    JOB_BRANCH: "jobsBranch"
 }
 
 function map(statusText) {
@@ -209,6 +210,7 @@ function formatBuilds(builds) {
         build.rawDuration = build.duration
         build.duration = msToTime(build.rawDuration)
         build.rawLastGodBuildTime = build.lastGodBuildTime
+        build.jobLink = encodeURIComponent(build.name)
 
         if (build.buildJenkinsId) {
             const jenkinsData = processJenkinsId(build.buildJenkinsId)
@@ -265,7 +267,44 @@ function getBranchBuilds(branch) {
     }
 }
 
+function getJobBranchesBuilds(job, page) {
+
+    const key = cacheKeys.JOBS + '.' + job + '/' + page;
+    const cached = cache.get(key);
+    const limit = config.table.branches.paging
+
+    if (cached) {
+        return Promise.resolve(formatBuilds(cached))
+    } else {
+        return buildsDb.getJobBranchesBuilds(job, page, limit)
+            .then(result => {
+                cache.set(key, result, config.caching[cacheKeys.BUILDS])
+                return result
+            })
+            .then(formatBuilds)
+    }
+}
+
+function getJobBranchBuilds(branchId, page) {
+    const key = cacheKeys.JOB_BRANCH + '.' + branchId + '/' + page;
+    const cached = cache.get(key);
+    const limit = config.table.branches.paging
+
+    if (cached) {
+        return Promise.resolve(formatBuilds(cached))
+    } else {
+        return buildsDb.getJobBranchBuilds(branchId, page, limit)
+            .then(result => {
+                cache.set(key, result, config.caching[cacheKeys.BUILDS])
+                return result
+            })
+            .then(formatBuilds)
+    }
+
+}
 
 exports.processBuildPost = processBuildPost
 exports.getBuilds = getBuilds
 exports.getBranchBuilds = getBranchBuilds
+exports.getJobBranchesBuilds = getJobBranchesBuilds
+exports.getJobBranchBuilds = getJobBranchBuilds

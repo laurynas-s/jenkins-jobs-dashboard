@@ -47,6 +47,52 @@ function getBranchBuilds(branch) {
             [branch])
 }
 
+function getJobBranchesBuilds(job, page, limit) {
+    const offset = page*limit;
+    return pool.query(`WITH latestBuildStatus AS (
+            SELECT
+                j.name,
+                br.branch,
+                br.id as branchId2,
+                br.main,
+                b.*,
+                ROW_NUMBER() OVER (PARTITION BY br.id ORDER BY b.time DESC) AS rn
+            FROM jobs j JOIN branches br ON j.id = br.jobId
+                        LEFT JOIN builds b ON br.id = b.branchId
+            WHERE j.name like ?
+        )
+        SELECT latestBuildStatus.*,
+               lb.id as lastGodBuildId,
+               lb.version as lastGodBuildVersion,
+               lb.time as lastGodBuildTime
+        FROM latestBuildStatus LEFT JOIN
+             builds as lb ON latestBuildStatus.branchId2 = lb.branchId and lb.lastOk = 1
+        WHERE rn = 1
+        ORDER BY main DESC, time desc
+        LIMIT ?, ?`,
+        [job, offset, limit])
+}
+function getJobBranchBuilds(branchId, page, limit) {
+    const offset = page*limit;
+    return pool.query(`with branchBuilds as (
+    SELECT j.name,
+           br.branch,
+           br.id as branchId2,
+           br.main,
+           b.*,
+           ROW_NUMBER() OVER (PARTITION BY b.jobId ORDER BY b.time DESC) AS rn
+    FROM branches br
+             JOIN builds b on br.id = b.branchId
+             JOIN jobs j on b.jobId = j.id
+    WHERE br.id = ?
+) SELECT branchBuilds.*
+  FROM branchBuilds  
+  WHERE branchBuilds.status != 'building' or branchBuilds.rn = 1
+  ORDER BY branchBuilds.time DESC
+        LIMIT ?, ?`,
+        [branchId, offset, limit])
+}
+
 function getLastSuccessfulBuild(branchId) {
     return pool.query(`SELECT * FROM builds b where b.status = 'ok' and b.branchId = ? ORDER BY b.time DESC LIMIT 1`, [branchId])
         .then(results => {
@@ -120,9 +166,11 @@ function markBuildsNotLastOk(branchId) {
 
 exports.getBuilds = getBuilds
 exports.getBranchBuilds = getBranchBuilds
+exports.getJobBranchesBuilds = getJobBranchesBuilds
 exports.getLastBuild = getLastBuild
 exports.getLastNotFinishedBuild = getLastNotFinishedBuild
 exports.updateBuild = updateBuild
 exports.insertBuild = insertBuild
 exports.getLastSuccessfulBuild = getLastSuccessfulBuild
 exports.markBuildsNotLastOk = markBuildsNotLastOk
+exports.getJobBranchBuilds = getJobBranchBuilds

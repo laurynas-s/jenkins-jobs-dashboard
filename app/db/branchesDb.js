@@ -47,6 +47,10 @@ function getDistinctBranchesByPattern(pattern, last) {
         })
 }
 
+function getJobBranches(job, page, limit) {
+
+}
+
 exports.getBranches = getBranches
 exports.getBranchByNameAndJob = getBranchByNameAndJob
 exports.insertBranch = insertBranch

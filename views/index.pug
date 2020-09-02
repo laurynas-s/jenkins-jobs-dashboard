@@ -21,14 +21,7 @@ html
                         div(class='col-lg-12')
                             div(class='alert alert-info')= message
                 div(class='row')
-                    table(class='table table-striped table-bordered table-hover dataTable')
-                        tr
-                            th= 'Name'
-                            th= 'Branch'
-                            th= 'Status'
-                            th= 'Build'
-                            th= 'Version'
-                            th= 'Duration'
-                            th= 'Time'
-                        each row in data
-                            include builds/row
+                    include builds/table
+                    if showPages
+                        include builds/pager
+

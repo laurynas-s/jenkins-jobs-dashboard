@@ -1,0 +1,5 @@
+td
+    span= row.branch + " "
+    if row.branchId
+        a(href='jobBranch?branchId=' + row.branchId + '&page=0')
+            span(class='fa fa-clock-o')
