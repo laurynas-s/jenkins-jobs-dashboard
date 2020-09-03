@@ -74,21 +74,15 @@ function getJobBranchesBuilds(job, page, limit) {
 }
 function getJobBranchBuilds(branchId, page, limit) {
     const offset = page*limit;
-    return pool.query(`with branchBuilds as (
+    return pool.query(`
     SELECT j.name,
            br.branch,
-           br.id as branchId2,
-           br.main,
-           b.*,
-           ROW_NUMBER() OVER (PARTITION BY b.jobId ORDER BY b.time DESC) AS rn
+           b.*
     FROM branches br
              JOIN builds b on br.id = b.branchId
              JOIN jobs j on b.jobId = j.id
     WHERE br.id = ?
-) SELECT branchBuilds.*
-  FROM branchBuilds  
-  WHERE branchBuilds.status != 'building' or branchBuilds.rn = 1
-  ORDER BY branchBuilds.time DESC
+    ORDER BY time DESC
         LIMIT ?, ?`,
         [branchId, offset, limit])
 }
@@ -114,8 +108,8 @@ function getLastBuild(branchId) {
             }
         })
 }
-function getLastNotFinishedBuild(branchId) {
-    return pool.query(`SELECT * FROM builds b where b.branchId = ? and status != 'ok' ORDER BY b.time DESC LIMIT 1`, [branchId])
+function getLastNotFinishedBuild(branchId, jenkinsId) {
+    return pool.query(`SELECT * FROM builds b where b.branchId = ? and status = 'building' and b.buildJenkinsId like ? ORDER BY b.time DESC LIMIT 1`, [branchId, jenkinsId])
         .then(results => {
             if (results.length > 0) {
                 return results[0]

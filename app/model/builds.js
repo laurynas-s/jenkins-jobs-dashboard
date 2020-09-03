@@ -163,7 +163,7 @@ function processBuildPost(buildPost) {
         })
         .then(branch => {
             branchId = branch.id
-            return buildsDb.getLastNotFinishedBuild(branchId)
+            return buildsDb.getLastNotFinishedBuild(branchId, buildPost.buildJenkinsId)
         })
         .then(build => {
 
