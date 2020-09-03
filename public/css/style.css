@@ -5,6 +5,7 @@
     color: darkgreen;
 }
 .build-in-progress {
+    color: darkorange;
 }
 .build-missing {
     color: grey;

@@ -1,7 +1,9 @@
 case row.status
     when 1: td(class='fa fa-check-square-o build-ok')
     when 2: td(class='build-in-progress')
-                img(src='images/loader1.gif', width="20", height="20" class='center')
+                div(style='text-align: center;')
+                    div(style='width: 14px; margin:2px auto;')
+                        i(class='fa fa-cog fa-spin')
     when 3: td(class='fa fa-bug build-error')
     when 4: th(class='fa fa-question-circle build-missing')
     when 5: th(class='fa fa-clock-o build-timeout')
