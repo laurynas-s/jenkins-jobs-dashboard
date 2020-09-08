@@ -211,6 +211,7 @@ function formatBuilds(builds) {
         build.duration = msToTime(build.rawDuration)
         build.rawLastGodBuildTime = build.lastGodBuildTime
         build.jobLink = encodeURIComponent(build.name)
+        build.encodedBranch = encodeURIComponent(build.branch)
 
         if (build.buildJenkinsId) {
             const jenkinsData = processJenkinsId(build.buildJenkinsId)

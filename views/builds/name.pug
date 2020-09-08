@@ -1,12 +1,10 @@
 td
+    a(href='job?job=' + row.jobLink + '&page=0')
+        span(class='fa fa-code-fork')
+    span= " "
     if row.hasJenkinsData
-        div
-            span=row.name + " "
-            a(href='job?job=' + row.jobLink + '&page=0')
-                span(class='fa fa-code-fork')
-            a(href=row.jenkinsData.jobUrl, target="_blank")
-                img(src='images/jenkins.png', width='20px', height='20px')
-    else
         span=row.name + " "
-        a(href='job?job=' + row.jobLink + '&page=0')
-            span(class='fa fa-code-fork')
+        a(href=row.jenkinsData.jobUrl, target="_blank")
+            img(src='images/jenkins.png', width='20px', height='20px')
+    else
+        span=row.name

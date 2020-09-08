@@ -1,5 +1,10 @@
 td
-    span= row.branch + " "
+    a(href="branch?branch=" + row.encodedBranch)
+        span(class='fa fa-sitemap')
+    span= " " + row.branch + " "
     if row.branchId
         a(href='jobBranch?branchId=' + row.branchId + '&page=0')
             span(class='fa fa-history')
+
+
+
