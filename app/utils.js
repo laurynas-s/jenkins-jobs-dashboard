@@ -12,7 +12,7 @@ function prettyDate(dateString) {
     var date = new Date(dateString);
     var d = date.getDate();
     var y = date.getFullYear();
-    return y + '-' + timeNumber(date.getMonth()) + '-' + timeNumber(d) + ' ' + timeNumber(date.getHours()) + ':' + timeNumber(date.getMinutes());
+    return y + '-' + timeNumber(date.getMonth() + 1) + '-' + timeNumber(d) + ' ' + timeNumber(date.getHours()) + ':' + timeNumber(date.getMinutes());
 }
 
 function formatDuration(seconds) {
